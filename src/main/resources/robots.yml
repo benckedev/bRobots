@@ -1,0 +1,151 @@
+# Robot Types Configuration
+# Define unlimited robot types here
+
+robots:
+  # Example: Mining Robot
+  miner:
+    display-name: "&6Mining Robot"
+    description:
+      - "&7A robot that mines resources"
+      - "&7for you automatically!"
+      - ""
+      - "&ePlace to start mining"
+
+    # Item representation
+    item:
+      material: ARMOR_STAND
+
+    # Visual appearance
+    appearance:
+      # Base64 head texture (optional)
+      head-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzI4YTYwNmQ2N2I3NmY5YjZmZjQ5YjYyNjU4NzY2NGY4ZDU2MjI2MjQwNjdhYjI3ZjFhZjM0MzRkYmI0YjI3In19fQ=="
+      chestplate:
+        material: IRON_CHESTPLATE
+      leggings:
+        material: IRON_LEGGINGS
+      boots:
+        material: IRON_BOOTS
+      item-in-hand:
+        material: IRON_PICKAXE
+
+    # Fuel capacity (max fuel units)
+    fuel-capacity: 1000
+
+    # Level configuration
+    levels:
+      1:
+        cost: 0 # Free for level 1
+        generation-delay: 60 # seconds
+        rewards:
+          - "80.0,miner_common"
+          - "20.0,miner_rare"
+        storage-limit: 256
+      2:
+        cost: 1000
+        generation-delay: 45
+        rewards:
+          - "70.0,miner_common"
+          - "25.0,miner_rare"
+          - "5.0,miner_epic"
+        storage-limit: 512
+      3:
+        cost: 5000
+        generation-delay: 30
+        rewards:
+          - "60.0,miner_common"
+          - "30.0,miner_rare"
+          - "10.0,miner_epic"
+        storage-limit: 1024
+
+  # Example: Farming Robot
+  farmer:
+    display-name: "&aFarming Robot"
+    description:
+      - "&7Automatically harvests"
+      - "&7crops for you!"
+      - ""
+      - "&ePlace near farms"
+
+    item:
+      material: ARMOR_STAND
+
+    appearance:
+      head-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjY5MGQzMjc0ODkzNDI1Y2IzNjY0YTQ5YjQ4ZjU3MzNmMWZhNGMzMTYzZWY1YjY1MjZhNDU3YjRlMTRlOCJ9fX0="
+      chestplate:
+        material: LEATHER_CHESTPLATE
+        data: 0
+      leggings:
+        material: LEATHER_LEGGINGS
+        data: 0
+      boots:
+        material: LEATHER_BOOTS
+        data: 0
+      item-in-hand:
+        material: IRON_HOE
+
+    fuel-capacity: 800
+
+    levels:
+      1:
+        cost: 0
+        generation-delay: 90
+        rewards:
+          - "100.0,farmer_basic"
+        storage-limit: 128
+      2:
+        cost: 750
+        generation-delay: 60
+        rewards:
+          - "85.0,farmer_basic"
+          - "15.0,farmer_advanced"
+        storage-limit: 256
+
+  # Example: Combat Robot
+  warrior:
+    display-name: "&cWarrior Robot"
+    description:
+      - "&7Defends your base and"
+      - "&7collects mob drops!"
+      - ""
+      - "&ePlace in mob farm"
+
+    item:
+      material: ARMOR_STAND
+
+    appearance:
+      head-texture: "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTA2ZmE4Yjk4OTYzNWUzNzJmODk2MzE2NWY3NjM1NGI2ZjI5ODU3MjRjNjhhNTQ3ZGVmOTA1ZGUwNThmMjkxNCJ9fX0="
+      chestplate:
+        material: DIAMOND_CHESTPLATE
+      leggings:
+        material: DIAMOND_LEGGINGS
+      boots:
+        material: DIAMOND_BOOTS
+      item-in-hand:
+        material: DIAMOND_SWORD
+
+    fuel-capacity: 1200
+
+    levels:
+      1:
+        cost: 0
+        generation-delay: 120
+        rewards:
+          - "90.0,warrior_common"
+          - "10.0,warrior_rare"
+        storage-limit: 192
+      2:
+        cost: 2000
+        generation-delay: 90
+        rewards:
+          - "75.0,warrior_common"
+          - "20.0,warrior_rare"
+          - "5.0,warrior_legendary"
+        storage-limit: 384
+      3:
+        cost: 10000
+        generation-delay: 60
+        rewards:
+          - "60.0,warrior_common"
+          - "30.0,warrior_rare"
+          - "10.0,warrior_legendary"
+        storage-limit: 768

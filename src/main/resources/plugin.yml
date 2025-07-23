@@ -1,0 +1,55 @@
+name: RobotPlugin
+version: 1.0.0
+main: dev.bencke.RobotPlugin
+author: bencke
+description: High-performance custom robot companions plugin
+api-version: 1.8
+depend: [Vault]
+softdepend: []
+
+commands:
+  robot:
+    description: Main robot command
+    usage: /<command> [args]
+    aliases: [robots]
+
+permissions:
+  robots.*:
+    description: All robot permissions
+    default: op
+    children:
+      robots.give: true
+      robots.fuel: true
+      robots.list: true
+      robots.remove: true
+      robots.reload: true
+      robots.admin: true
+      robots.use: true
+
+  robots.give:
+    description: Give robot items to players
+    default: op
+
+  robots.fuel:
+    description: Give fuel items to players
+    default: op
+
+  robots.list:
+    description: List robots
+    default: true
+
+  robots.remove:
+    description: Remove robots
+    default: true
+
+  robots.reload:
+    description: Reload configuration
+    default: op
+
+  robots.admin:
+    description: Admin permissions
+    default: op
+
+  robots.use:
+    description: Use robots
+    default: true

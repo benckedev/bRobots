@@ -1,0 +1,91 @@
+# Rewards Configuration
+# Define all possible rewards here
+
+rewards:
+  # Mining Robot Rewards
+  miner_common:
+    name: "&7Common Ores"
+    chance: 80.0
+    type: ITEM
+    actions:
+      - "COBBLESTONE,32,0,&7Cobblestone"
+      - "COAL,8,0,&8Coal"
+      - "STONE,16,0,&7Stone"
+
+  miner_rare:
+    name: "&bRare Ores"
+    chance: 20.0
+    type: ITEM
+    actions:
+      - "IRON_INGOT,4,0,&fIron Ingot"
+      - "GOLD_INGOT,2,0,&6Gold Ingot"
+      - "REDSTONE,8,0,&cRedstone"
+
+  miner_epic:
+    name: "&5Epic Ores"
+    chance: 5.0
+    type: ITEM
+    actions:
+      - "DIAMOND,1,0,&bDiamond"
+      - "EMERALD,1,0,&aEmerald"
+      - "LAPIS_LAZULI,4,4,&9Lapis Lazuli"
+
+  # Farming Robot Rewards
+  farmer_basic:
+    name: "&aBasic Crops"
+    chance: 100.0
+    type: ITEM
+    actions:
+      - "WHEAT,16,0,&eWheat"
+      - "CARROT_ITEM,12,0,&6Carrot"
+      - "POTATO_ITEM,12,0,&ePotato"
+      - "SEEDS,8,0,&aSeeds"
+
+  farmer_advanced:
+    name: "&2Advanced Crops"
+    chance: 15.0
+    type: ITEM
+    actions:
+      - "MELON,8,0,&cMelon"
+      - "PUMPKIN,4,0,&6Pumpkin"
+      - "SUGAR_CANE,16,0,&fSugar Cane"
+      - "COCOA_BEANS,8,3,&4Cocoa Beans"
+
+  # Warrior Robot Rewards
+  warrior_common:
+    name: "&7Common Drops"
+    chance: 90.0
+    type: ITEM
+    actions:
+      - "ROTTEN_FLESH,16,0,&cRotten Flesh"
+      - "BONE,8,0,&fBone"
+      - "STRING,8,0,&fString"
+      - "ARROW,16,0,&7Arrow"
+
+  warrior_rare:
+    name: "&bRare Drops"
+    chance: 20.0
+    type: ITEM
+    actions:
+      - "ENDER_PEARL,2,0,&5Ender Pearl"
+      - "BLAZE_ROD,1,0,&6Blaze Rod"
+      - "GUNPOWDER,8,0,&7Gunpowder"
+      - "SPIDER_EYE,4,0,&4Spider Eye"
+
+  warrior_legendary:
+    name: "&6Legendary Drops"
+    chance: 5.0
+    type: ITEM
+    actions:
+      - "WITHER_SKELETON_SKULL,1,1,&8Wither Skull"
+      - "NETHER_STAR,1,0,&fNether Star,&7A rare star|&7from the Nether"
+
+  # Command-based rewards example
+  special_reward:
+    name: "&dSpecial Reward"
+    chance: 100.0
+    type: COMMAND
+    actions:
+      - "[CONSOLE]eco give %player% 100"
+      - "[CONSOLE]give %player% diamond 1"
+      - "spawn" # Player executes this command

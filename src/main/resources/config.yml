@@ -1,0 +1,56 @@
+# Robot Plugin Configuration
+# Version: 1.0.0
+
+# MySQL Database Settings
+mysql:
+  host: localhost
+  port: 3306
+  database: robots
+  username: root
+  password: ""
+
+# Redis Cache Settings (Optional)
+redis:
+  enabled: false
+  host: localhost
+  port: 6379
+  password: ""
+
+# World Restrictions
+# Leave empty to allow robots in all worlds
+allowed-worlds:
+  - world
+  - world_nether
+  - world_the_end
+
+# Messages
+messages:
+  no-permission: "&cYou don't have permission to do this!"
+  player-not-found: "&cPlayer &e%player% &cnot found!"
+  invalid-robot-type: "&cInvalid robot type: &e%type%"
+  invalid-fuel-type: "&cInvalid fuel type: &e%type%"
+  robot-given: "&aGave &e%amount%x %type% &ato &e%player%"
+  robot-received: "&aYou received &e%amount%x %type%"
+  fuel-given: "&aGave &e%amount%x %type% &afuel to &e%player%"
+  fuel-received: "&aYou received &e%amount%x %type% &afuel"
+  config-reloaded: "&aConfiguration reloaded successfully!"
+  no-robots: "&e%player% &cdoesn't have any robots!"
+  robot-placed: "&aRobot placed successfully!"
+  robot-removed: "&aRobot removed successfully!"
+  robot-pickup: "&aRobot picked up! All data saved."
+  world-not-allowed: "&cYou cannot place robots in this world!"
+  cannot-break-others: "&cYou can only break your own robots!"
+  robot-leveled-up: "&aRobot leveled up to level &e%level%&a!"
+  insufficient-funds: "&cYou don't have enough money for this upgrade!"
+  items-collected: "&aItems collected from robot storage!"
+  fuel-added: "&aAdded &e%amount% &afuel to the robot!"
+  storage-full: "&cRobot storage is full! Collect items first."
+
+# Performance Settings
+performance:
+  # How often to save robot data (in minutes)
+  auto-save-interval: 5
+  # Maximum robots per player (0 = unlimited)
+  max-robots-per-player: 10
+  # Chunk unload behavior
+  unload-robots-in-unloaded-chunks: true
