@@ -1,9 +1,10 @@
-package dev.bencke.commands;
+package dev.bencke.robots.commands;
 
-import dev.bencke.RobotPlugin;
-import dev.bencke.config.FuelType;
-import dev.bencke.config.RobotType;
-import dev.bencke.utils.ColorUtil;
+import dev.bencke.robots.RobotPlugin;
+import dev.bencke.robots.config.FuelType;
+import dev.bencke.robots.config.RobotType;
+import dev.bencke.robots.utils.ColorUtil;
+import lombok.var;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

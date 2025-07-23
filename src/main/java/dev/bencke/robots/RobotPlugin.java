@@ -1,14 +1,13 @@
-package dev.bencke;
+package dev.bencke.robots;
 
-import dev.bencke.commands.CommandManager;
-import dev.bencke.config.ConfigManager;
-import dev.bencke.database.DatabaseManager;
-import dev.bencke.listeners.ListenerManager;
-import dev.bencke.managers.*;
-import dev.bencke.utils.Logger;
+import dev.bencke.robots.commands.CommandManager;
+import dev.bencke.robots.config.ConfigManager;
+import dev.bencke.robots.database.DatabaseManager;
+import dev.bencke.robots.listeners.ListenerManager;
+import dev.bencke.robots.managers.*;
+import dev.bencke.robots.utils.Logger;
 import lombok.Getter;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.concurrent.ExecutorService;
@@ -30,6 +29,7 @@ public class RobotPlugin extends JavaPlugin {
     private PacketManager packetManager;
     private CommandManager commandManager;
     private ListenerManager listenerManager;
+    private PlayerManager playerManager;
 
     private Economy economy;
     private ExecutorService executorService;
@@ -47,13 +47,6 @@ public class RobotPlugin extends JavaPlugin {
         configManager = new ConfigManager(this);
         configManager.loadAll();
 
-        // Setup economy
-        if (!setupEconomy()) {
-            Logger.severe("Vault economy not found! Disabling plugin.");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
         // Initialize database
         databaseManager = new DatabaseManager(this);
         databaseManager.connect();
@@ -64,6 +57,7 @@ public class RobotPlugin extends JavaPlugin {
         fuelManager = new FuelManager(this);
         robotManager = new RobotManager(this);
         menuManager = new MenuManager(this);
+        playerManager = new PlayerManager(this);
 
         // Register commands and listeners
         commandManager = new CommandManager(this);
@@ -106,22 +100,6 @@ public class RobotPlugin extends JavaPlugin {
         }
 
         Logger.info("RobotPlugin disabled!");
-    }
-
-    private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
-            return false;
-        }
-
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager()
-                .getRegistration(Economy.class);
-
-        if (rsp == null) {
-            return false;
-        }
-
-        economy = rsp.getProvider();
-        return economy != null;
     }
 
     public void runAsync(Runnable task) {

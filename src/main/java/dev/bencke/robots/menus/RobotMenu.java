@@ -1,9 +1,9 @@
-package dev.bencke.menus;
+package dev.bencke.robots.menus;
 
-import dev.bencke.RobotPlugin;
-import dev.bencke.robots.Robot;
-import dev.bencke.utils.ColorUtil;
-import dev.bencke.utils.ItemBuilder;
+import dev.bencke.robots.RobotPlugin;
+import dev.bencke.robots.models.Robot;
+import dev.bencke.robots.utils.ColorUtil;
+import dev.bencke.robots.utils.ItemBuilder;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

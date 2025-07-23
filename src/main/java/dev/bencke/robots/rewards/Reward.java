@@ -1,8 +1,9 @@
-package dev.bencke.rewards;
+package dev.bencke.robots.rewards;
 
-import dev.bencke.RobotPlugin;
-import dev.bencke.utils.ColorUtil;
+import dev.bencke.robots.RobotPlugin;
+import dev.bencke.robots.utils.ColorUtil;
 import lombok.Data;
+import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,6 +22,7 @@ public class Reward {
     private final String name;
     private final double chance;
     private final RewardType type;
+    @Getter
     private final List<RewardAction> actions;
 
     public Reward(String id, ConfigurationSection section) {
@@ -34,6 +36,14 @@ public class Reward {
         for (String actionStr : actionList) {
             actions.add(parseAction(actionStr));
         }
+    }
+
+    public Reward(String id, double chance, RewardType type, List<RewardAction> actions) {
+        this.id = id;
+        this.name = id;
+        this.chance = chance;
+        this.type = type;
+        this.actions = actions;
     }
 
     private RewardAction parseAction(String actionStr) {

@@ -1,12 +1,14 @@
-package dev.bencke.robots;
+package dev.bencke.robots.models;
 
-import dev.bencke.RobotPlugin;
-import dev.bencke.config.RobotType;
-import dev.bencke.rewards.Reward;
-import dev.bencke.utils.ItemBuilder;
-import dev.bencke.utils.LocationSerializer;
-import dev.bencke.utils.PacketUtils;
+import dev.bencke.robots.RobotPlugin;
+import dev.bencke.robots.config.RobotType;
+import dev.bencke.robots.rewards.Reward;
+import dev.bencke.robots.utils.ItemSerializer;
+import dev.bencke.robots.utils.ItemBuilder;
+import dev.bencke.robots.utils.LocationSerializer;
+import dev.bencke.robots.utils.PacketUtils;
 import lombok.Data;
+import lombok.Getter;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -33,6 +35,7 @@ public class Robot {
     private final Location location;
     private final Map<ItemStack, Integer> storage = new ConcurrentHashMap<>();
     private final Set<String> upgrades = ConcurrentHashMap.newKeySet();
+    @Getter
     private ArmorStand entity;
     private int level;
     private long fuel;

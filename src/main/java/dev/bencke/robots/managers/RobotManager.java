@@ -1,18 +1,16 @@
-package dev.bencke.managers;
+package dev.bencke.robots.managers;
 
-import dev.bencke.RobotPlugin;
-import dev.bencke.config.RobotType;
-import dev.bencke.robots.Robot;
-import dev.bencke.utils.ItemBuilder;
-import dev.bencke.utils.Logger;
+import dev.bencke.robots.RobotPlugin;
+import dev.bencke.robots.config.RobotType;
+import dev.bencke.robots.models.Robot;
+import dev.bencke.robots.utils.ItemBuilder;
+import dev.bencke.robots.utils.Logger;
 import lombok.Getter;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;

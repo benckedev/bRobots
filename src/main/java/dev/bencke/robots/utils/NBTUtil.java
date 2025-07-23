@@ -1,4 +1,4 @@
-package dev.bencke.utils;
+package dev.bencke.robots.utils;
 
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;

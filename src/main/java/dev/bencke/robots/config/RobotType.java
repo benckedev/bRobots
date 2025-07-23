@@ -1,4 +1,4 @@
-package dev.bencke.config;
+package dev.bencke.robots.config;
 
 import lombok.Data;
 import org.bukkit.Material;

@@ -1,4 +1,4 @@
-package dev.bencke.utils;
+package dev.bencke.robots.utils;
 
 import org.bukkit.ChatColor;
 

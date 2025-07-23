@@ -1,6 +1,6 @@
-package dev.bencke.utils;
+package dev.bencke.robots.utils;
 
-import dev.bencke.RobotPlugin;
+import dev.bencke.robots.RobotPlugin;
 import org.bukkit.Bukkit;
 
 import java.util.logging.Level;

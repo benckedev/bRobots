@@ -1,10 +1,10 @@
-package dev.bencke.database;
+package dev.bencke.robots.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import dev.bencke.RobotPlugin;
-import dev.bencke.robots.Robot;
-import dev.bencke.utils.Logger;
+import dev.bencke.robots.RobotPlugin;
+import dev.bencke.robots.models.Robot;
+import dev.bencke.robots.utils.Logger;
 import lombok.Getter;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -318,7 +318,8 @@ public class DatabaseManager {
             if (parts.length == 2) {
                 try {
                     map.put(parts[0], Integer.parseInt(parts[1]));
-                } catch (NumberFormatException ignored) {}
+                } catch (NumberFormatException ignored) {
+                }
             }
         }
 

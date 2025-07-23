@@ -1,4 +1,4 @@
-package dev.bencke.utils;
+package dev.bencke.robots.utils;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;

@@ -1,11 +1,11 @@
-name: RobotPlugin
+name: bRobots
 version: 1.0.0
 main: dev.bencke.RobotPlugin
 author: bencke
 description: High-performance custom robot companions plugin
 api-version: 1.8
 depend: [Vault]
-softdepend: []
+softdepend: [Multiverse-Core]
 
 commands:
   robot:

@@ -1,12 +1,13 @@
-package dev.bencke.listeners;
+package dev.bencke.robots.listeners;
 
-import dev.bencke.RobotPlugin;
-import dev.bencke.config.FuelType;
-import dev.bencke.config.RobotType;
-import dev.bencke.menus.RobotMenu;
-import dev.bencke.robots.Robot;
-import dev.bencke.utils.ColorUtil;
-import dev.bencke.utils.NBTUtil;
+import dev.bencke.robots.RobotPlugin;
+import dev.bencke.robots.config.FuelType;
+import dev.bencke.robots.config.RobotType;
+import dev.bencke.robots.menus.RobotMenu;
+import dev.bencke.robots.models.Robot;
+import dev.bencke.robots.utils.ColorUtil;
+import dev.bencke.robots.utils.NBTUtil;
+import lombok.var;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;

@@ -1,4 +1,4 @@
-package dev.bencke.utils;
+package dev.bencke.robots.utils;
 
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
