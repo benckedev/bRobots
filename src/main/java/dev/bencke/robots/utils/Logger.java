@@ -7,7 +7,7 @@ import java.util.logging.Level;
 
 public class Logger {
 
-    private static final String PREFIX = "[RobotPlugin] ";
+    private static final String PREFIX = "[bRobots] ";
 
     public static void info(String message) {
         Bukkit.getLogger().log(Level.INFO, PREFIX + message);

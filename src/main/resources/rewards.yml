@@ -28,7 +28,6 @@ rewards:
     actions:
       - "DIAMOND,1,0,&bDiamond"
       - "EMERALD,1,0,&aEmerald"
-      - "LAPIS_LAZULI,4,4,&9Lapis Lazuli"
 
   # Farming Robot Rewards
   farmer_basic:
@@ -49,7 +48,6 @@ rewards:
       - "MELON,8,0,&cMelon"
       - "PUMPKIN,4,0,&6Pumpkin"
       - "SUGAR_CANE,16,0,&fSugar Cane"
-      - "COCOA_BEANS,8,3,&4Cocoa Beans"
 
   # Warrior Robot Rewards
   warrior_common:
@@ -69,7 +67,6 @@ rewards:
     actions:
       - "ENDER_PEARL,2,0,&5Ender Pearl"
       - "BLAZE_ROD,1,0,&6Blaze Rod"
-      - "GUNPOWDER,8,0,&7Gunpowder"
       - "SPIDER_EYE,4,0,&4Spider Eye"
 
   warrior_legendary:
@@ -77,7 +74,6 @@ rewards:
     chance: 5.0
     type: ITEM
     actions:
-      - "WITHER_SKELETON_SKULL,1,1,&8Wither Skull"
       - "NETHER_STAR,1,0,&fNether Star,&7A rare star|&7from the Nether"
 
   # Command-based rewards example

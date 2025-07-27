@@ -79,9 +79,18 @@ public class DatabaseManager {
 
     private void setupRedis() {
         try {
-            String host = plugin.getConfigManager().getMainConfig().getString("redis.host");
-            int port = plugin.getConfigManager().getMainConfig().getInt("redis.port");
-            String password = plugin.getConfigManager().getMainConfig().getString("redis.password");
+            String host = plugin.getConfigManager()
+                    .getMainConfig()
+                    .getString("redis.host", "localhost");
+            int port = plugin.getConfigManager()
+                    .getMainConfig()
+                    .getInt("redis.port", 6379);
+            String user = plugin.getConfigManager()
+                    .getMainConfig()
+                    .getString("redis.user", "default");
+            String password = plugin.getConfigManager()
+                    .getMainConfig()
+                    .getString("redis.password", "");
 
             JedisPoolConfig poolConfig = new JedisPoolConfig();
             poolConfig.setMaxTotal(10);
@@ -90,24 +99,43 @@ public class DatabaseManager {
             poolConfig.setTestOnBorrow(true);
             poolConfig.setTestOnReturn(true);
             poolConfig.setTestWhileIdle(true);
+            poolConfig.setMinEvictableIdleTimeMillis(60_000);
+            poolConfig.setTimeBetweenEvictionRunsMillis(30_000);
+            poolConfig.setNumTestsPerEvictionRun(-1);
+            poolConfig.setBlockWhenExhausted(false);
 
-            if (password != null && !password.isEmpty()) {
-                jedisPool = new JedisPool(poolConfig, host, port, 2000, password);
-            } else {
-                jedisPool = new JedisPool(poolConfig, host, port, 2000);
-            }
+            // Escolha o construtor adequado para incluir usuário + senha
+            jedisPool = new JedisPool(
+                    poolConfig,
+                    host,
+                    port,
+                    5000,        // conexão timeout (ms)
+                    5000,        // soTimeout (ms)
+                    user,
+                    password,
+                    0,           // database index
+                    "brobots-plugin",
+                    false        // ssl desabilitado (true se usar TLS)
+            );
 
-            // Test connection
+            // Teste de conexão
             try (Jedis jedis = jedisPool.getResource()) {
                 jedis.ping();
                 redisEnabled = true;
-                Logger.info("Redis connection established!");
+                Logger.info("Redis (ACL) conectado como usuário '" + user + "'!");
             }
         } catch (Exception e) {
-            Logger.warning("Failed to connect to Redis: " + e.getMessage());
+            Logger.warning("Falha ao conectar ao Redis: " + e.getMessage());
+            e.printStackTrace();
             redisEnabled = false;
+
+            if (jedisPool != null && !jedisPool.isClosed()) {
+                jedisPool.close();
+                jedisPool = null;
+            }
         }
     }
+
 
     private void createTables() {
         String robotsTable = "CREATE TABLE IF NOT EXISTS robots (" +

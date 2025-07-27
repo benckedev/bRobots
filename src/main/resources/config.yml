@@ -11,9 +11,10 @@ mysql:
 
 # Redis Cache Settings (Optional)
 redis:
-  enabled: false
-  host: localhost
+  enabled: true
+  host: 127.0.0.1
   port: 6379
+  user: "default"
   password: ""
 
 # World Restrictions
@@ -42,9 +43,15 @@ messages:
   cannot-break-others: "&cYou can only break your own robots!"
   robot-leveled-up: "&aRobot leveled up to level &e%level%&a!"
   insufficient-funds: "&cYou don't have enough money for this upgrade!"
-  items-collected: "&aItems collected from robot storage!"
+  items-collected: "&aCollected &e%collected% &aitems from robot storage!"
   fuel-added: "&aAdded &e%amount% &afuel to the robot!"
   storage-full: "&cRobot storage is full! Collect items first."
+  # New storage menu messages
+  specific-item-collected: "&aCollected &e%amount%x %item% &afrom robot storage!"
+  partial-item-collected: "&eCollected &a%collected%x &e%item%&e, &c%remaining% &eremaining in storage!"
+  inventory-full: "&cYour inventory is full! Cannot collect items."
+  some-items-remaining: "&e%remaining% &eitems couldn't fit in your inventory!"
+
 
 # Performance Settings
 performance:

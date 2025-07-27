@@ -37,9 +37,9 @@ public class RobotMenu {
         ConfigurationSection config = plugin.getConfigManager().getMenuConfig()
                 .getConfigurationSection("robot-menu");
 
-        String title = ColorUtil.colorize(config.getString("title", "&8Robot Menu"))
+        String title = ColorUtil.colorize(config.getString("title", "&8Robot Menu")
                 .replace("%robot%", robot.getType().getDisplayName())
-                .replace("%level%", String.valueOf(robot.getLevel()));
+                .replace("%level%", String.valueOf(robot.getLevel())));
 
         this.inventory = Bukkit.createInventory(null, config.getInt("size", 54), title);
 
@@ -47,29 +47,17 @@ public class RobotMenu {
     }
 
     private void setupMenu(ConfigurationSection config) {
-        // Background
-        ItemStack background = createItem(config.getConfigurationSection("items.background"));
-        for (int i = 0; i < inventory.getSize(); i++) {
-            inventory.setItem(i, background);
-        }
-
         // Info item
         setupInfoItem(config.getConfigurationSection("items.info"));
 
-        // Storage view
-        setupStorageView(config.getConfigurationSection("items.storage"));
+        // Storage button
+        setupStorageButton(config.getConfigurationSection("items.storage-button"));
 
         // Level up button
         setupLevelUpButton(config.getConfigurationSection("items.level-up"));
 
         // Fuel indicator
         setupFuelIndicator(config.getConfigurationSection("items.fuel"));
-
-        // Collect items button
-        setupCollectButton(config.getConfigurationSection("items.collect"));
-
-        // Close button
-        setupCloseButton(config.getConfigurationSection("items.close"));
     }
 
     private void setupInfoItem(ConfigurationSection section) {
@@ -97,21 +85,30 @@ public class RobotMenu {
         inventory.setItem(slot, item);
     }
 
-    private void setupStorageView(ConfigurationSection section) {
+    private void setupStorageButton(ConfigurationSection section) {
         if (section == null) return;
 
-        List<Integer> slots = section.getIntegerList("slots");
-        int index = 0;
+        int slot = section.getInt("slot");
 
-        for (Map.Entry<ItemStack, Integer> entry : robot.getStorage().entrySet()) {
-            if (index >= slots.size()) break;
+        List<String> lore = section.getStringList("lore").stream()
+                .map(line -> line
+                        .replace("%storage%", String.valueOf(getStorageCount()))
+                        .replace("%max_storage%", String.valueOf(getMaxStorage()))
+                )
+                .map(ColorUtil::colorize)
+                .collect(Collectors.toList());
 
-            ItemStack display = entry.getKey().clone();
-            display.setAmount(entry.getValue());
+        ItemStack item = new ItemBuilder(Material.valueOf(section.getString("material", "CHEST")))
+                .name(ColorUtil.colorize(section.getString("name")))
+                .lore(lore)
+                .build();
 
-            inventory.setItem(slots.get(index), display);
-            index++;
-        }
+        inventory.setItem(slot, item);
+
+        clickHandlers.put(slot, p -> {
+            p.playSound(p.getLocation(), Sound.CHEST_OPEN, 1f, 1f);
+            new RobotStorageMenu(plugin, robot, p).open();
+        });
     }
 
     private void setupLevelUpButton(ConfigurationSection section) {
@@ -133,7 +130,6 @@ public class RobotMenu {
             ItemStack item = new ItemBuilder(Material.valueOf(section.getString("material", "EXP_BOTTLE")))
                     .name(ColorUtil.colorize(section.getString("name")))
                     .lore(lore)
-                    .glow(true)
                     .build();
 
             inventory.setItem(slot, item);
@@ -202,71 +198,6 @@ public class RobotMenu {
                 .build();
 
         inventory.setItem(slot, item);
-    }
-
-    private void setupCollectButton(ConfigurationSection section) {
-        if (section == null) return;
-
-        int slot = section.getInt("slot");
-
-        if (!robot.getStorage().isEmpty()) {
-            ItemStack item = new ItemBuilder(Material.valueOf(section.getString("material", "HOPPER")))
-                    .name(ColorUtil.colorize(section.getString("name")))
-                    .lore(ColorUtil.colorize(section.getStringList("lore")))
-                    .glow(true)
-                    .build();
-
-            inventory.setItem(slot, item);
-
-            clickHandlers.put(slot, p -> {
-                collectItems(p);
-                p.playSound(p.getLocation(), Sound.CHEST_OPEN, 1f, 1f);
-                p.closeInventory();
-            });
-        } else {
-            ItemStack item = new ItemBuilder(Material.BARRIER)
-                    .name(ColorUtil.colorize(section.getString("empty-name", "&cNo Items")))
-                    .lore(ColorUtil.colorize(section.getStringList("empty-lore")))
-                    .build();
-
-            inventory.setItem(slot, item);
-        }
-    }
-
-    private void setupCloseButton(ConfigurationSection section) {
-        if (section == null) return;
-
-        int slot = section.getInt("slot");
-
-        ItemStack item = new ItemBuilder(Material.valueOf(section.getString("material", "BARRIER")))
-                .name(ColorUtil.colorize(section.getString("name")))
-                .lore(ColorUtil.colorize(section.getStringList("lore")))
-                .build();
-
-        inventory.setItem(slot, item);
-
-        clickHandlers.put(slot, Player::closeInventory);
-    }
-
-    private void collectItems(Player player) {
-        Map<ItemStack, Integer> storage = new HashMap<>(robot.getStorage());
-        robot.getStorage().clear();
-
-        for (Map.Entry<ItemStack, Integer> entry : storage.entrySet()) {
-            ItemStack item = entry.getKey().clone();
-            item.setAmount(entry.getValue());
-
-            Map<Integer, ItemStack> leftover = player.getInventory().addItem(item);
-
-            // Add back items that couldn't fit
-            for (ItemStack left : leftover.values()) {
-                robot.getStorage().put(left, left.getAmount());
-            }
-        }
-
-        player.sendMessage(ColorUtil.colorize(
-                plugin.getConfigManager().getMessage("items-collected")
-        ));
     }
 
     private int getStorageCount() {

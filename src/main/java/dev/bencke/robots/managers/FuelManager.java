@@ -2,7 +2,7 @@ package dev.bencke.robots.managers;
 
 import dev.bencke.robots.RobotPlugin;
 import dev.bencke.robots.config.FuelType;
-import dev.bencke.robots.utils.ItemBuilder;
+import dev.bencke.robots.items.FuelItem;
 import dev.bencke.robots.utils.NBTUtil;
 import org.bukkit.inventory.ItemStack;
 
@@ -15,18 +15,11 @@ public class FuelManager {
     }
 
     public ItemStack createFuelItem(FuelType fuelType) {
-        ItemBuilder builder = new ItemBuilder(fuelType.getMaterial())
-                .durability(fuelType.getData())
-                .name(fuelType.getDisplayName())
-                .lore(fuelType.getDescription())
-                .nbt("fuel_type", fuelType.getId())
-                .nbt("fuel_duration", String.valueOf(fuelType.getDuration()));
+        return createFuelItem(fuelType, (int) (fuelType.getDuration() * fuelType.getInternalAmount()));
+    }
 
-        if (fuelType.isGlow()) {
-            builder.glow(true);
-        }
-
-        return builder.build();
+    public ItemStack createFuelItem(FuelType fuelType, int amount) {
+        return FuelItem.create(fuelType, amount);
     }
 
     public FuelType getFuelTypeFromItem(ItemStack item) {
@@ -36,5 +29,9 @@ public class FuelManager {
         if (fuelId == null) return null;
 
         return plugin.getConfigManager().getFuelTypes().get(fuelId);
+    }
+
+    public int getFuelAmount(ItemStack item) {
+        return FuelItem.getFuelAmount(item);
     }
 }

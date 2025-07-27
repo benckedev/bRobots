@@ -3,12 +3,10 @@ package dev.bencke.robots.models;
 import dev.bencke.robots.RobotPlugin;
 import dev.bencke.robots.config.RobotType;
 import dev.bencke.robots.rewards.Reward;
-import dev.bencke.robots.utils.ItemSerializer;
-import dev.bencke.robots.utils.ItemBuilder;
-import dev.bencke.robots.utils.LocationSerializer;
-import dev.bencke.robots.utils.PacketUtils;
+import dev.bencke.robots.utils.*;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,8 +16,6 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.EulerAngle;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,11 +26,12 @@ public class Robot {
 
     private final UUID id;
     private final UUID ownerId;
-    private final String ownerName;
     private final RobotType type;
     private final Location location;
     private final Map<ItemStack, Integer> storage = new ConcurrentHashMap<>();
     private final Set<String> upgrades = ConcurrentHashMap.newKeySet();
+    @Setter
+    private String ownerName;
     @Getter
     private ArmorStand entity;
     private int level;
@@ -56,37 +53,45 @@ public class Robot {
 
     @SuppressWarnings("unchecked")
     public static Robot deserialize(Map<String, Object> data) {
-        UUID id = UUID.fromString((String) data.get("id"));
-        UUID ownerId = UUID.fromString((String) data.get("owner"));
-        String ownerName = (String) data.get("ownerName");
-        String typeId = (String) data.get("type");
-        Location location = LocationSerializer.deserialize((String) data.get("location"));
+        try {
+            UUID id = UUID.fromString((String) data.get("id"));
+            UUID ownerId = UUID.fromString((String) data.get("owner"));
+            String ownerName = (String) data.get("ownerName");
+            String typeId = (String) data.get("type");
+            Location location = LocationSerializer.deserialize((String) data.get("location"));
 
-        RobotType type = RobotPlugin.getInstance().getConfigManager()
-                .getRobotTypes().get(typeId);
+            RobotType type = RobotPlugin.getInstance().getConfigManager()
+                    .getRobotTypes().get(typeId);
 
-        if (type == null) {
+            if (type == null) {
+                return null;
+            }
+
+            Robot robot = new Robot(ownerId, ownerName, type, location);
+            robot.level = (int) data.get("level");
+            robot.fuel = ((Number) data.get("fuel")).longValue();
+
+            // Load upgrades
+            List<String> upgradeList = (List<String>) data.get("upgrades");
+            if (upgradeList != null) {
+                robot.upgrades.addAll(upgradeList);
+            }
+
+            // Load storage
+            Map<String, Integer> storageData = (Map<String, Integer>) data.get("storage");
+            if (storageData != null) {
+                for (Map.Entry<String, Integer> entry : storageData.entrySet()) {
+                    ItemStack item = ItemSerializer.deserialize(entry.getKey());
+                    if (item != null) {
+                        robot.storage.put(item, entry.getValue());
+                    }
+                }
+            }
+            return robot;
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
-
-        Robot robot = new Robot(ownerId, ownerName, type, location);
-        robot.level = (int) data.get("level");
-        robot.fuel = ((Number) data.get("fuel")).longValue();
-
-        // Load upgrades
-        List<String> upgradeList = (List<String>) data.get("upgrades");
-        robot.upgrades.addAll(upgradeList);
-
-        // Load storage
-        Map<String, Integer> storageData = (Map<String, Integer>) data.get("storage");
-        storageData.forEach((serialized, amount) -> {
-            ItemStack item = ItemSerializer.deserialize(serialized);
-            if (item != null) {
-                robot.storage.put(item, amount);
-            }
-        });
-
-        return robot;
     }
 
     public void spawn() {
@@ -94,17 +99,24 @@ public class Robot {
             return;
         }
 
+
         entity = location.getWorld().spawn(location, ArmorStand.class);
         entity.setSmall(true);
         entity.setArms(true);
         entity.setBasePlate(false);
-        entity.setGravity(false);
+        entity.setGravity(true);
         entity.setCanPickupItems(false);
-        entity.setCustomName(type.getDisplayName().replace("%owner%", ownerName));
+        entity.setCustomName(ColorUtil.colorize(
+                type.getDisplayName()
+                        .replace("%owner%", ownerName)
+                        .replace("%level%", String.valueOf(level))
+                        .replace("%fuel%", String.valueOf(fuel))));
         entity.setCustomNameVisible(true);
+        entity.setVisible(true);
+        entity.setRemoveWhenFarAway(false);
+        entity.setCanPickupItems(false);
         entity.setMetadata("robot", new FixedMetadataValue(RobotPlugin.getInstance(), id.toString()));
 
-        // Apply equipment
         if (type.getHeadTexture() != null) {
             entity.setHelmet(createSkullItem(type.getHeadTexture()));
         }
@@ -124,9 +136,6 @@ public class Robot {
         if (type.getItemInHand() != null) {
             entity.setItemInHand(type.getItemInHand());
         }
-
-        // Set pose
-        entity.setRightArmPose(new EulerAngle(Math.toRadians(-15), 0, Math.toRadians(10)));
 
         // Spawn particles
         spawnParticles(EnumParticle.VILLAGER_HAPPY, 10);
@@ -151,11 +160,6 @@ public class Robot {
         if (canGenerate()) {
             generate();
         }
-
-        // Idle animation
-        if (!generating) {
-            animateIdle();
-        }
     }
 
     private boolean canGenerate() {
@@ -178,6 +182,7 @@ public class Robot {
                 .getRewardsForLevel(type, level);
 
         if (rewards.isEmpty()) {
+            System.out.println("DEBUG: No rewards found for robot type " + type.getId() + " level " + level);
             generating = false;
             return;
         }
@@ -186,6 +191,7 @@ public class Robot {
         Reward reward = selectRandomReward(rewards);
 
         if (reward != null) {
+
             RobotPlugin.getInstance().runAsync(() -> {
                 // Generate reward items
                 List<ItemStack> items = reward.generate();
@@ -193,7 +199,9 @@ public class Robot {
                 // Add to storage
                 Bukkit.getScheduler().runTask(RobotPlugin.getInstance(), () -> {
                     for (ItemStack item : items) {
-                        addToStorage(item);
+                        if (item != null && item.getType() != Material.AIR) {
+                            addToStorage(item);
+                        }
                     }
 
                     // Effects
@@ -202,6 +210,7 @@ public class Robot {
                 });
             });
         } else {
+            System.out.println("DEBUG: No reward selected");
             generating = false;
         }
     }
@@ -225,7 +234,42 @@ public class Robot {
     }
 
     private void addToStorage(ItemStack item) {
-        storage.merge(item, item.getAmount(), Integer::sum);
+        if (item == null || item.getType() == Material.AIR) return;
+
+        // Find existing item that matches (same type, durability, and meta)
+        ItemStack existingKey = null;
+        for (ItemStack key : storage.keySet()) {
+            if (isSimilarItem(key, item)) {
+                existingKey = key;
+                break;
+            }
+        }
+
+        if (existingKey != null) {
+            // Add to existing stack
+            storage.put(existingKey, storage.get(existingKey) + item.getAmount());
+        } else {
+            // Create new entry
+            ItemStack newKey = item.clone();
+            newKey.setAmount(1); // Use amount 1 as key, store actual amount in map
+            storage.put(newKey, item.getAmount());
+        }
+
+        System.out.println("DEBUG: Added " + item.getAmount() + "x " + item.getType() + " to storage");
+        System.out.println("DEBUG: Storage now has " + storage.size() + " different item types");
+    }
+
+    private boolean isSimilarItem(ItemStack item1, ItemStack item2) {
+        if (item1.getType() != item2.getType()) return false;
+        if (item1.getDurability() != item2.getDurability()) return false;
+
+        // Check metadata
+        if (item1.hasItemMeta() != item2.hasItemMeta()) return false;
+        if (item1.hasItemMeta()) {
+            return item1.getItemMeta().equals(item2.getItemMeta());
+        }
+
+        return true;
     }
 
     public boolean isStorageFull() {
@@ -273,70 +317,21 @@ public class Robot {
     private void updateDisplayName() {
         if (entity == null) return;
 
-        String name = type.getDisplayName()
+        String name = ColorUtil.colorize(type.getDisplayName()
                 .replace("%owner%", ownerName)
                 .replace("%level%", String.valueOf(level))
-                .replace("%fuel%", String.valueOf(fuel));
+                .replace("%fuel%", String.valueOf(fuel)));
 
         entity.setCustomName(name);
     }
 
-    private void animateIdle() {
-        double time = System.currentTimeMillis() / 1000.0;
-        double angle = Math.sin(time) * 0.1;
-        entity.setRightArmPose(new EulerAngle(Math.toRadians(-15) + angle, 0, Math.toRadians(10)));
-    }
-
     private void playGenerationEffects() {
         spawnParticles(EnumParticle.SPELL_WITCH, 15);
-        playSound(Sound.LEVEL_UP, 0.5f, 1.2f);
-
-        // Animation
-        new BukkitRunnable() {
-            int ticks = 0;
-
-            @Override
-            public void run() {
-                if (ticks >= 10 || entity == null || entity.isDead()) {
-                    cancel();
-                    return;
-                }
-
-                double rotation = ticks * 36;
-                entity.setHeadPose(new EulerAngle(0, Math.toRadians(rotation), 0));
-                ticks++;
-            }
-        }.runTaskTimer(RobotPlugin.getInstance(), 0, 2);
     }
 
     private void playLevelUpEffects() {
         spawnParticles(EnumParticle.FIREWORKS_SPARK, 30);
         playSound(Sound.ENDERDRAGON_GROWL, 1f, 1.5f);
-
-        // Create helix effect
-        new BukkitRunnable() {
-            double angle = 0;
-            int ticks = 0;
-
-            @Override
-            public void run() {
-                if (ticks >= 40 || entity == null || entity.isDead()) {
-                    cancel();
-                    return;
-                }
-
-                double radius = 0.5;
-                double x = radius * Math.cos(angle);
-                double z = radius * Math.sin(angle);
-                double y = ticks * 0.05;
-
-                Location loc = entity.getLocation().add(x, y, z);
-                spawnParticle(loc, EnumParticle.SPELL_INSTANT);
-
-                angle += Math.PI / 4;
-                ticks++;
-            }
-        }.runTaskTimer(RobotPlugin.getInstance(), 0, 1);
     }
 
     private void spawnParticles(EnumParticle particle, int count) {
@@ -370,12 +365,14 @@ public class Robot {
         data.put("fuel", fuel);
         data.put("upgrades", new ArrayList<>(upgrades));
 
-        // Serialize storage
+        // Serialize storage properly
         Map<String, Integer> storageData = new HashMap<>();
-        storage.forEach((item, amount) -> {
-            String serialized = ItemSerializer.serialize(item);
-            storageData.put(serialized, amount);
-        });
+        for (Map.Entry<ItemStack, Integer> entry : storage.entrySet()) {
+            String serialized = ItemSerializer.serialize(entry.getKey());
+            if (serialized != null) {
+                storageData.put(serialized, entry.getValue());
+            }
+        }
         data.put("storage", storageData);
 
         return data;

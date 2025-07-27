@@ -10,13 +10,16 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ItemBuilder {
 
-    private final ItemStack item;
-    private final ItemMeta meta;
+    private ItemStack item;
+    private ItemMeta meta;
 
     public ItemBuilder(Material material) {
         this.item = new ItemStack(material);
@@ -80,8 +83,13 @@ public class ItemBuilder {
     }
 
     public ItemBuilder nbt(String key, String value) {
-        item.setItemMeta(meta);
-        NBTUtil.setString(item, key, value);
+        // Build item first
+        ItemStack builtItem = new ItemStack(item.getType(), item.getAmount(), item.getDurability());
+        builtItem.setItemMeta(meta);
+
+        // Apply NBT
+        this.item = NBTUtil.setString(builtItem, key, value);
+        this.meta = this.item.getItemMeta();
         return this;
     }
 

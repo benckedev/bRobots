@@ -31,7 +31,7 @@ public class PlayerJoinQuitListener implements Listener {
 
         // Save and unload player's robots
         plugin.runAsync(() -> {
-            plugin.getRobotManager().unloadPlayerRobots(player);
+            plugin.getRobotManager().savePlayerRobots(player);
         });
 
         // Remove from removal mode if applicable

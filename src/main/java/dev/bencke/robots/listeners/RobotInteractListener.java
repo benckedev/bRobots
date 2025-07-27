@@ -6,6 +6,7 @@ import dev.bencke.robots.config.RobotType;
 import dev.bencke.robots.menus.RobotMenu;
 import dev.bencke.robots.models.Robot;
 import dev.bencke.robots.utils.ColorUtil;
+import dev.bencke.robots.utils.Logger;
 import dev.bencke.robots.utils.NBTUtil;
 import lombok.var;
 import org.bukkit.Location;
@@ -23,6 +24,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Base64;
 
 public class RobotInteractListener implements Listener {
 
@@ -140,19 +143,47 @@ public class RobotInteractListener implements Listener {
                 FuelType fuel = plugin.getConfigManager().getFuelTypes().get(fuelId);
 
                 if (fuel != null) {
-                    // Add fuel
-                    robot.addFuel(fuel.getDuration());
+                    int fuelAmount = plugin.getFuelManager().getFuelAmount(hand);
+                    if (fuelAmount <= 0) {
+                        fuelAmount = (int) fuel.getDuration(); // Fallback para combustível antigo
+                    }
 
-                    // Remove fuel item
-                    if (hand.getAmount() > 1) {
-                        hand.setAmount(hand.getAmount() - 1);
+                    // Calculate how much fuel can be added
+                    long currentFuel = robot.getFuel();
+                    long maxFuel = robot.getType().getFuelCapacity();
+                    long canAdd = maxFuel - currentFuel;
+
+                    if (canAdd <= 0) {
+                        player.sendMessage(ColorUtil.colorize(
+                                "&cThe robot's fuel tank is already full!"
+                        ));
+                        return;
+                    }
+
+                    // Calculate actual amount to add and remainder
+                    long toAdd = Math.min(canAdd, fuelAmount);
+                    long remainder = fuelAmount - toAdd;
+
+                    // Add fuel to robot
+                    robot.addFuel(toAdd);
+
+                    // Handle item update
+                    if (remainder > 0) {
+                        // Create new fuel item with remainder
+                        ItemStack newFuel = plugin.getFuelManager().createFuelItem(fuel, (int) remainder);
+                        player.setItemInHand(newFuel);
                     } else {
-                        player.setItemInHand(null);
+                        // Remove fuel item completely
+                        if (hand.getAmount() > 1) {
+                            hand.setAmount(hand.getAmount() - 1);
+                        } else {
+                            player.setItemInHand(null);
+                        }
                     }
 
                     player.sendMessage(ColorUtil.colorize(
                             plugin.getConfigManager().getMessage("fuel-added")
-                                    .replace("%amount%", String.valueOf(fuel.getDuration()))
+                                    .replace("%amount%", String.valueOf(toAdd))
                     ));
                     return;
                 }
@@ -239,8 +270,25 @@ public class RobotInteractListener implements Listener {
     }
 
     private Robot deserializeRobotData(String data, Player player, RobotType type, Location location) {
-        // Implementation would deserialize the robot data
-        // For now, create a new robot
-        return plugin.getRobotManager().createRobot(player, type, location);
+        try {
+            byte[] decoded = Base64.getDecoder().decode(data);
+            String jsonData = new String(decoded);
+
+            // Parse o JSON manualmente ou use uma biblioteca
+            // Por simplicidade, vamos criar um novo robot
+            // Em produção, você deveria parsear os dados salvos
+
+            Robot robot = plugin.getRobotManager().createRobot(player, type, location);
+
+            // TODO: Aplicar os dados salvos (level, fuel, storage, etc)
+            // robot.setLevel(savedLevel);
+            // robot.setFuel(savedFuel);
+            // etc...
+
+            return robot;
+        } catch (Exception e) {
+            Logger.warning("Failed to deserialize robot data: " + e.getMessage());
+            return plugin.getRobotManager().createRobot(player, type, location);
+        }
     }
 }

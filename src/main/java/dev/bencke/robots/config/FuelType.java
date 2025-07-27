@@ -16,6 +16,7 @@ public class FuelType {
     private final short data;
     private final long duration;
     private final boolean glow;
+    private final int internalAmount;
 
     public FuelType(String id, ConfigurationSection section) {
         this.id = id;
@@ -25,5 +26,6 @@ public class FuelType {
         this.data = (short) section.getInt("data", 0);
         this.duration = section.getLong("duration", 100);
         this.glow = section.getBoolean("glow", false);
+        this.internalAmount = section.getInt("internal-amount", 1);
     }
 }

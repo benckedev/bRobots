@@ -9,7 +9,7 @@ public class ColorUtil {
 
     public static String colorize(String text) {
         if (text == null) return null;
-        return ChatColor.translateAlternateColorCodes('&', text);
+        return text.replace('&', '§');
     }
 
     public static List<String> colorize(List<String> texts) {

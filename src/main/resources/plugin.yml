@@ -1,6 +1,6 @@
 name: bRobots
 version: 1.0.0
-main: dev.bencke.RobotPlugin
+main: dev.bencke.robots.RobotPlugin
 author: bencke
 description: High-performance custom robot companions plugin
 api-version: 1.8

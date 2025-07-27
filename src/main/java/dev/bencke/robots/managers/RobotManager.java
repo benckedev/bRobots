@@ -24,6 +24,7 @@ public class RobotManager {
     @Getter
     private final Map<UUID, Robot> robots = new ConcurrentHashMap<>();
     private final Map<UUID, Set<UUID>> playerRobots = new ConcurrentHashMap<>();
+    @Getter
     private final Map<UUID, Robot> entityToRobot = new ConcurrentHashMap<>();
 
     private BukkitRunnable tickTask;
@@ -90,6 +91,15 @@ public class RobotManager {
         plugin.getDatabaseManager().deleteRobot(robot.getId());
     }
 
+    public void savePlayerRobots(Player player) {
+        Set<Robot> playerRobotSet = getPlayerRobots(player.getUniqueId());
+
+        for (Robot robot : playerRobotSet) {
+            // Save to database
+            plugin.getDatabaseManager().saveRobot(robot);
+        }
+    }
+
     public Robot getRobotFromEntity(Entity entity) {
         if (!(entity instanceof ArmorStand)) {
             return null;
@@ -114,12 +124,21 @@ public class RobotManager {
         plugin.getDatabaseManager().loadRobots(player.getUniqueId())
                 .thenAccept(loadedRobots -> {
                     for (Robot robot : loadedRobots) {
+                        // Check if robot is already loaded
+                        if (robots.containsKey(robot.getId())) {
+                            // Robot already active, just update owner data if needed
+                            Robot existingRobot = robots.get(robot.getId());
+                            existingRobot.setOwnerName(player.getName());
+                            continue;
+                        }
+
+                        // New robot, load it
                         robots.put(robot.getId(), robot);
                         playerRobots.computeIfAbsent(player.getUniqueId(), k -> ConcurrentHashMap.newKeySet())
                                 .add(robot.getId());
 
-                        // Spawn if in same world
-                        if (robot.getLocation().getWorld().equals(player.getWorld())) {
+                        // Spawn if in loaded chunk
+                        if (robot.getLocation().getChunk().isLoaded()) {
                             plugin.getServer().getScheduler().runTask(plugin, () -> {
                                 robot.spawn();
                                 if (robot.getEntity() != null) {
@@ -188,9 +207,20 @@ public class RobotManager {
     }
 
     private String serializeRobotData(Robot robot) {
-        // Simple serialization for NBT storage
         Map<String, Object> data = robot.serialize();
-        return Base64.getEncoder().encodeToString(data.toString().getBytes());
+
+        // Criar um formato simples de serialização
+        StringBuilder sb = new StringBuilder();
+        sb.append("level=").append(robot.getLevel()).append(";");
+        sb.append("fuel=").append(robot.getFuel()).append(";");
+
+        // Serializar storage
+        robot.getStorage().forEach((item, amount) -> {
+            sb.append("item_").append(item.getType().name())
+                    .append("_").append(amount).append(";");
+        });
+
+        return Base64.getEncoder().encodeToString(sb.toString().getBytes());
     }
 
     public void saveAll() {

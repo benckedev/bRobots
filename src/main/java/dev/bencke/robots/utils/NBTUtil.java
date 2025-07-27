@@ -3,6 +3,7 @@ package dev.bencke.robots.utils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class NBTUtil {
 
@@ -11,7 +12,16 @@ public class NBTUtil {
         NBTTagCompound tag = nmsItem.hasTag() ? nmsItem.getTag() : new NBTTagCompound();
         tag.setString(key, value);
         nmsItem.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsItem);
+
+        // Apply NBT back to original item
+        ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
+        ItemMeta meta = newItem.getItemMeta();
+        item.setItemMeta(meta);
+        item.setType(newItem.getType());
+        item.setAmount(newItem.getAmount());
+        item.setDurability(newItem.getDurability());
+
+        return newItem;
     }
 
     public static String getString(ItemStack item, String key) {

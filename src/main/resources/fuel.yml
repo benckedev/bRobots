@@ -12,6 +12,7 @@ fuel:
     material: COAL
     data: 0
     duration: 100
+    internal-amount: 1  # Cada item contém 100 unidades
     glow: false
 
   advanced_fuel:
@@ -25,43 +26,5 @@ fuel:
     material: BLAZE_POWDER
     data: 0
     duration: 250
-    glow: true
-
-  premium_fuel:
-    display-name: "&6Premium Fuel"
-    description:
-      - "&7Top-tier fuel for"
-      - "&7maximum efficiency"
-      - ""
-      - "&eDuration: &f500 units"
-      - "&eRight-click robot to refuel"
-    material: MAGMA_CREAM
-    data: 0
-    duration: 500
-    glow: true
-
-  eco_fuel:
-    display-name: "&aEco-Friendly Fuel"
-    description:
-      - "&7Sustainable fuel source"
-      - "&7Good for the environment!"
-      - ""
-      - "&eDuration: &f150 units"
-      - "&eRight-click robot to refuel"
-    material: SLIME_BALL
-    data: 0
-    duration: 150
-    glow: false
-
-  nuclear_fuel:
-    display-name: "&cNuclear Fuel"
-    description:
-      - "&7Extremely powerful fuel"
-      - "&7Handle with care!"
-      - ""
-      - "&eDuration: &f1000 units"
-      - "&eRight-click robot to refuel"
-    material: NETHER_STAR
-    data: 0
-    duration: 1000
+    internal-amount: 1  # Cada item contém 250 unidades
     glow: true

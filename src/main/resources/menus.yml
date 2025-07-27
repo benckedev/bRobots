@@ -27,9 +27,18 @@ robot-menu:
         - "&7This robot generates"
         - "&7items automatically!"
 
-    # Storage Display
-    storage:
-      slots: [19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34]
+    # Storage Button (replaces direct storage display)
+    storage-button:
+      slot: 22
+      material: CHEST
+      name: "&a&lRobot Storage"
+      lore:
+        - "&7Items Stored: &e%storage%/%max_storage%"
+        - ""
+        - "&7Click to view and manage"
+        - "&7all generated items!"
+        - ""
+        - "&eClick to open storage!"
 
     # Level Up Button
     level-up:
@@ -62,21 +71,6 @@ robot-menu:
         - "&7Add fuel by right-clicking"
         - "&7the robot with fuel items!"
 
-    # Collect Items Button
-    collect:
-      slot: 49
-      material: HOPPER
-      name: "&a&lCollect Items"
-      lore:
-        - "&7Click to collect all"
-        - "&7items from storage!"
-        - ""
-        - "&eClick to collect!"
-      empty-name: "&c&lNo Items"
-      empty-lore:
-        - "&7The robot storage"
-        - "&7is currently empty!"
-
     # Close Button
     close:
       slot: 53
@@ -85,36 +79,70 @@ robot-menu:
       lore:
         - "&7Click to close menu"
 
-# Reward Selection Menu
-reward-menu:
-  title: "&8Select Rewards - %robot%"
-  size: 36
+# Robot Storage Menu
+storage-menu:
+  title: "&8%robot% Storage &7(%storage%/%max_storage%)"
+  size: 54
 
   items:
+    # Background
     background:
       material: STAINED_GLASS_PANE
       data: 7 # Gray
       name: " "
       lore: []
 
-    reward-display:
-      # Dynamic slots for rewards
-      start-slot: 10
-      end-slot: 25
-
+    # Storage Info
     info:
       slot: 4
-      material: BOOK
-      name: "&e&lReward Information"
+      material: CHEST
+      name: "&e&lStorage Information"
       lore:
-        - "&7Select which rewards"
-        - "&7this robot should generate"
+        - "&7Robot: &f%robot% &7(Level %level%)"
+        - "&7Items Stored: &a%storage%/%max_storage%"
         - ""
-        - "&eClick rewards to toggle!"
+        - "&7Click individual items to collect them"
+        - "&7or use the collect all button!"
 
+    # Storage Display Slots - SIMPLIFIED to just a few clear slots
+    storage:
+      slots: [10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25]
+      empty-slot:
+        material: STAINED_GLASS_PANE
+        data: 8 # Light gray
+        name: "&7Empty Slot"
+        lore:
+          - "&7This slot is empty"
+
+    # Collect All Button
+    collect-all:
+      slot: 49
+      material: HOPPER
+      name: "&a&lCollect All Items"
+      lore:
+        - "&7Total Items: &e%storage%"
+        - ""
+        - "&7Click to collect all items"
+        - "&7from the robot storage!"
+        - ""
+        - "&eClick to collect!"
+      empty-name: "&c&lNo Items"
+      empty-lore:
+        - "&7The robot storage"
+        - "&7is currently empty!"
+
+    # Back Button
     back:
-      slot: 31
+      slot: 45
       material: ARROW
       name: "&c&lBack"
       lore:
         - "&7Return to robot menu"
+
+    # Close Button
+    close:
+      slot: 53
+      material: BARRIER
+      name: "&c&lClose"
+      lore:
+        - "&7Click to close menu"
